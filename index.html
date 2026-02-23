@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#2196f3">
+  <title>Trail Making Test</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- ===== MODAL POLÍTICA ===== -->
+<div id="modalPolitica" class="modal">
+  <div class="modal-contenido">
+    <h3>Política de tratamiento de datos personales</h3>
+
+    <div id="textoPolitica" class="politica-texto">
+
+      <p><strong>Información importante sobre el uso de sus datos</strong></p>
+
+      <p>
+        Somos un grupo de estudiantes universitarios realizando una investigación académica titulada:
+        <strong>“FATIGA Y SOMNOLENCIA EN CONDUCTORES DE TRANSPORTE PÚBLICO”.</strong>
+      </p>
+
+      <p><strong>Investigador principal:</strong> [Nombre del responsable]</p>
+      <p><strong>Contacto:</strong> [Correo electrónico del investigador]</p>
+      <p><strong>Universidad:</strong> [Nombre de la universidad]</p>
+      <p><strong>Facultad/Programa:</strong> [Nombre de la facultad o programa]</p>
+
+      <p><strong>Finalidad de la recolección de datos:</strong></p>
+
+      <p>
+        Los datos que usted proporcione serán utilizados exclusivamente con fines académicos
+        para la investigación mencionada. La información recopilada será analizada de manera
+        confidencial y solo será accesible para los miembros del equipo de investigación.
+      </p>
+
+      <p><strong>Sus derechos según la Ley 1581 de 2012:</strong></p>
+
+      <p>Como titular de sus datos personales, usted tiene derecho a:</p>
+
+      <p>• Conocer, acceder y actualizar sus datos.</p>
+      <p>• Rectificar información inexacta.</p>
+      <p>• Solicitar la eliminación de sus datos en cualquier momento.</p>
+      <p>• Presentar consultas o inquietudes sobre el tratamiento de su información.</p>
+
+      <p><strong>Confidencialidad y manejo de datos:</strong></p>
+
+      <p>• Sus respuestas serán tratadas con estricta confidencialidad.</p>
+      <p>• En las publicaciones o resultados de la investigación, los datos se presentarán de manera agregada y anónima.</p>
+      <p>• Los datos personales identificables serán almacenados de forma segura y eliminados una vez finalizada la investigación.</p>
+      <p>• No compartiremos su información personal con terceros.</p>
+
+      <p><strong>Consentimiento:</strong></p>
+
+      <p>
+        Al continuar con esta encuesta/investigación, usted autoriza de manera voluntaria,
+        previa e informada el tratamiento de sus datos personales para los fines académicos
+        descritos, conforme a la Ley 1581 de 2012.
+      </p>
+
+      <p>
+        Para ejercer sus derechos o retirar su consentimiento, puede contactarnos en cualquier
+        momento a través del correo: [correo electrónico del investigador principal].
+      </p>
+
+    </div>
+
+    <div class="modal-botones">
+      <button id="btnAceptar" disabled>Aceptar</button>
+      <button onclick="cancelarRegistro()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PANTALLA DE REGISTRO ===== -->
+<div id="registro">
+  <h2>Registro del participante</h2>
+
+  <input type="text" id="nombre" placeholder="Nombre">
+  <input type="text" id="apellido" placeholder="Apellido">
+  <input type="number" id="edad" placeholder="Edad">
+
+  <button id="btnExportar" onclick="exportarCSV()" style="display:none;">
+    Exportar resultados
+  </button>
+
+  <button onclick="iniciarTest()">Iniciar prueba</button>
+</div>
+
+<!-- ===== PANTALLA DEL TEST ===== -->
+<div id="test" style="display:none;">
+  <h2 id="tituloTest"></h2>
+        <!-- Botón instrucciones -->
+      <div class="info-container">
+        <button id="btnInfo">ⓘ Instrucciones</button>
+
+        <div id="panelInstrucciones" class="panel-instrucciones">
+          <p id="textoInstrucciones"></p>
+          <button onclick="cerrarInstrucciones()">Cerrar</button>
+        </div>
+      </div>
+  <p>Tiempo: <span id="time">0.00</span> s</p>
+  <p id="instruccion" class="instruccion"></p>
+  <canvas id="canvas"></canvas>
+  <br>
+  <button onclick="exportarCSV()">Exportar Resultados</button>
+</div>
+
+<script src="script.js"></script>
+
+
+<script>
+  
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("service-worker.js");
+}
+
+</script>
+
+</body>
+</html>
