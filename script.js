@@ -181,7 +181,6 @@ function guardarResultadoFinal() {
 
   fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
     method: "POST",
-    mode: "no-cors",
     headers: {
       "Content-Type": "application/json"
     },
@@ -367,7 +366,6 @@ function capturarResultado(tipoTest) {
 
     fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
         method: "POST",
-        mode: "no-cors",
         headers: {
             "Content-Type": "application/json"
         },
