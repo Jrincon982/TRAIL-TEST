@@ -181,6 +181,7 @@ function guardarResultadoFinal() {
 
   fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
     method: "POST",
+    mode: "no-cors",
     headers: {
       "Content-Type": "application/json"
     },
@@ -245,7 +246,6 @@ function validarNumero(x, y) {
     tiempoB = tiempoFinal;
 
     capturarResultado("B");
-    guardarResultadoFinal();
     alert(
       "Trail Test completado\n" +
       `Tiempo A: ${tiempoA} s\n` +
@@ -269,13 +269,13 @@ function getPos(e) {
 
   if (e.touches) {
     return {
-      x: (e.touches[0].clientX - rect.left) * scaleX,
-      y: (e.touches[0].clientY - rect.top) * scaleY
+      x: e.touches[0].clientX - rect.left,
+      y: e.touches[0].clientY - rect.top
     };
   } else {
     return {
-      x: e.offsetX * scaleX,
-      y: e.offsetY * scaleY
+      x: e.offsetX,
+      y: e.offsetY
     };
   }
 }
@@ -366,6 +366,7 @@ function capturarResultado(tipoTest) {
 
     fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
         method: "POST",
+        mode: "no-cors",
         headers: {
             "Content-Type": "application/json"
         },
@@ -446,4 +447,4 @@ canvas.addEventListener("touchend", () => dibujando = false);
 // ===============================
 // INICIO
 // ===============================
-resetCanvas();
+resetCanvas(); 
