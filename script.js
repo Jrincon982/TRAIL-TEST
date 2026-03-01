@@ -247,7 +247,6 @@ function validarNumero(x, y) {
 
     capturarResultado("B");
     guardarResultadoFinal();
-
     alert(
       "Trail Test completado\n" +
       `Tiempo A: ${tiempoA} s\n` +
@@ -271,13 +270,13 @@ function getPos(e) {
 
   if (e.touches) {
     return {
-      x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
+      x: (e.touches[0].clientX - rect.left) * scaleX,
+      y: (e.touches[0].clientY - rect.top) * scaleY
     };
   } else {
     return {
-      x: e.offsetX,
-      y: e.offsetY
+      x: e.offsetX * scaleX,
+      y: e.offsetY * scaleY
     };
   }
 }
