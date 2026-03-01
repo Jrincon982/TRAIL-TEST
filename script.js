@@ -1,9 +1,18 @@
-
+// ===============================
+// CONSTANTES
+// ===============================
 const TOTAL_NUMEROS = 8;
-const TOTAL_PARES = 4; 
+const TOTAL_PARES = 4;
 const RADIO = 18;
 const MARGEN = 40;
 const DISTANCIA_MIN = 60;
+
+// URL DEL APPS SCRIPT (UNA SOLA VEZ)
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec";
+
+// ===============================
+// ELEMENTOS DOM
+// ===============================
 const textoPolitica = document.getElementById("textoPolitica");
 const btnAceptar = document.getElementById("btnAceptar");
 const modal = document.getElementById("modalPolitica");
@@ -14,7 +23,9 @@ const btnInfo = document.getElementById("btnInfo");
 const panelInstrucciones = document.getElementById("panelInstrucciones");
 const textoInstrucciones = document.getElementById("textoInstrucciones");
 
-
+// ===============================
+// VARIABLES DE ESTADO
+// ===============================
 let dibujando = false;
 let ultimoX = 0;
 let ultimoY = 0;
@@ -26,127 +37,76 @@ let puntoActivo = null;
 let tiempoA = null;
 let tiempoB = null;
 
-
-
-// Tamaño del canvas
+// ===============================
+// CANVAS RESPONSIVE
+// ===============================
 function ajustarCanvas() {
   const ancho = Math.min(window.innerWidth - 20, 900);
   const alto = Math.min(window.innerHeight - 220, 500);
-
   canvas.width = ancho;
   canvas.height = alto;
 }
-
 ajustarCanvas();
 window.addEventListener("resize", ajustarCanvas);
 
-
-// Configuración del trazo
+// ===============================
+// CONFIG TRAZO
+// ===============================
 ctx.lineWidth = 3;
 ctx.lineCap = "round";
 ctx.strokeStyle = "blue";
 
 // ===============================
-// ARREGLO DE FECHA
+// FECHA
 // ===============================
 function obtenerFechaFormateada() {
   const f = new Date();
-
-  const dia = String(f.getDate()).padStart(2, "0");
-  const mes = String(f.getMonth() + 1).padStart(2, "0");
-  const anio = f.getFullYear();
-
-  const horas = String(f.getHours()).padStart(2, "0");
-  const minutos = String(f.getMinutes()).padStart(2, "0");
-  const segundos = String(f.getSeconds()).padStart(2, "0");
-
-  return `${dia}/${mes}/${anio} ${horas}:${minutos}:${segundos}`;
+  return `${f.getDate().toString().padStart(2,"0")}/${
+    (f.getMonth()+1).toString().padStart(2,"0")
+  }/${f.getFullYear()} ${f.getHours().toString().padStart(2,"0")}:${
+    f.getMinutes().toString().padStart(2,"0")
+  }:${f.getSeconds().toString().padStart(2,"0")}`;
 }
 
-
 // ===============================
-// NÚMEROS DEL TEST (1 A 8)/(1A a 4D)
+// GENERAR PUNTOS
 // ===============================
 function generarPuntos() {
   puntos = [];
-
   let secuencia = [];
 
   if (modoTest === "A") {
-    for (let i = 1; i <= 8; i++) {
-      secuencia.push(i.toString());
-    }
+    for (let i = 1; i <= TOTAL_NUMEROS; i++) secuencia.push(i.toString());
   } else {
     for (let i = 1; i <= TOTAL_PARES; i++) {
       secuencia.push(i.toString());
-      secuencia.push(String.fromCharCode(64 + i)); // A, B, C...
+      secuencia.push(String.fromCharCode(64 + i));
     }
   }
 
   secuencia.forEach(valor => {
-    let valido = false;
-    let x, y;
-
+    let valido = false, x, y;
     while (!valido) {
       x = Math.random() * (canvas.width - 2 * MARGEN) + MARGEN;
       y = Math.random() * (canvas.height - 2 * MARGEN) + MARGEN;
-
-      valido = true;
-      for (let p of puntos) {
-        if (Math.hypot(x - p.x, y - p.y) < DISTANCIA_MIN) {
-          valido = false;
-          break;
-        }
-      }
+      valido = puntos.every(p => Math.hypot(x - p.x, y - p.y) >= DISTANCIA_MIN);
     }
-
     puntos.push({ valor, x, y });
   });
 }
 
 // ===============================
-// INICIO
-// ===============================
-function iniciarTest() {
-  const nombre = document.getElementById("nombre").value.trim();
-  const apellido = document.getElementById("apellido").value.trim();
-  const edad = document.getElementById("edad").value;
-
-  if (!nombre || !apellido || !edad) {
-    alert("Complete todos los campos");
-    return;
-  }
-
-  participante = { nombre, apellido, edad };
-
-  modal.style.display = "block";
-}
-
-
-// ===============================
-// CRONÓMETRO
-// ===============================
-let inicioTiempo = null;
-let cronometroActivo = false;
-
-function actualizarTiempo() {
-  if (!cronometroActivo) return;
-  const t = (performance.now() - inicioTiempo) / 1000;
-  timeLabel.textContent = t.toFixed(2);
-  requestAnimationFrame(actualizarTiempo);
-}
-
-// ===============================
-// DIBUJAR NÚMEROS
+// DIBUJO
 // ===============================
 function dibujarNumeros() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
   ctx.font = "18px Arial";
   ctx.fillStyle = "black";
   ctx.strokeStyle = "black";
 
   puntos.forEach(p => {
     ctx.beginPath();
-    ctx.arc(p.x, p.y, 18, 0, Math.PI * 2);
+    ctx.arc(p.x, p.y, RADIO, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillText(p.valor, p.x - 6, p.y + 6);
   });
@@ -154,11 +114,7 @@ function dibujarNumeros() {
   ctx.strokeStyle = "blue";
 }
 
-// ===============================
-// LIMPIAR CANVAS
-// ===============================
 function resetCanvas() {
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   indiceActual = 0;
   puntoActivo = null;
   generarPuntos();
@@ -166,103 +122,7 @@ function resetCanvas() {
 }
 
 // ===============================
-// GUARDAR RESULTADO
-// ===============================
-function guardarResultadoFinal() {
-
-  const resultado = {
-    nombre: participante.nombre,
-    apellido: participante.apellido,
-    edad: participante.edad,
-    tiempoA: tiempoA,
-    tiempoB: tiempoB,
-    fecha: obtenerFechaFormateada()
-  };
-
-  fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(resultado)
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log("Sheets:", data);
-    alert("✅ Resultados guardados en Google Sheets");
-  })
-  .catch(err => {
-    console.error("❌ Error Sheets:", err);
-    alert("❌ Error al guardar datos");
-  });
-}
-
-
-// ===============================
-// VALIDAR TOQUE DE NÚMERO
-// ===============================
-function validarNumero(x, y) {
-  const p = puntos[indiceActual];
-  const d = Math.hypot(x - p.x, y - p.y);
-
-  // Evitar múltiples activaciones del mismo punto
-  if (puntoActivo === indiceActual) return;
-
-  if (d < RADIO) {
-
-    puntoActivo = indiceActual;
-
-    // Iniciar cronómetro
-    if (indiceActual === 0 && !cronometroActivo) {
-      inicioTiempo = performance.now();
-      cronometroActivo = true;
-      actualizarTiempo();
-    }
-
-    indiceActual++;
-
-    // Prueba finalizada
-    if (indiceActual === puntos.length) {
-  cronometroActivo = false;
-
-  const tiempoFinal = parseFloat(timeLabel.textContent);
-
-  if (modoTest === "A") {
-    // Guardar tiempo A
-    tiempoA = tiempoFinal;
-    capturarResultado("A");
-
-    // Preparar Test B
-    modoTest = "B";
-    document.getElementById("tituloTest").textContent = "Trail Making Test B";
-    actualizarInstrucciones();
-    alert("Test A finalizado.\nInicia el Test B");
-
-    resetCanvas(); // genera letras y números
-    return;
-  }
-
-  if (modoTest === "B") {
-    // Guardar tiempo B
-    tiempoB = tiempoFinal;
-
-    capturarResultado("B");
-    guardarResultadoFinal();
-    alert(
-      "Trail Test completado\n" +
-      `Tiempo A: ${tiempoA} s\n` +
-      `Tiempo B: ${tiempoB} s`
-    );
-    document.getElementById("btnExportar").style.display = "inline";
-  }
-}
-
-  }
-}
-
-
-// ===============================
-// OBTENER POSICIÓN
+// POSICIÓN REAL (FIX TÁCTIL)
 // ===============================
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
@@ -283,167 +143,161 @@ function getPos(e) {
 }
 
 // ===============================
-// INSTRUCCIONES
+// CRONÓMETRO
 // ===============================
+let inicioTiempo = null;
+let cronometroActivo = false;
 
-function actualizarInstrucciones() {
-  if (modoTest === "A") {
-    textoInstrucciones.innerHTML = 
-    `<strong>Parte A</strong><br><br>
-    Conecte los números en orden ascendente:<br>
-    1 → 2 → 3 → 4 ...<br><br>
-    lo más rápido posible sin soltar el click.`;
-  } else {
-    textoInstrucciones.innerHTML = 
-    `<strong>Parte B</strong><br><br>
-    Conecte alternando número y letra:<br>
-    1 → A → 2 → B → 3 → C ...<br><br>
-    Mantenga el orden correcto y trabaje lo más rápido posible.`;
+function actualizarTiempo() {
+  if (!cronometroActivo) return;
+  timeLabel.textContent = ((performance.now() - inicioTiempo)/1000).toFixed(2);
+  requestAnimationFrame(actualizarTiempo);
+}
+
+// ===============================
+// VALIDACIÓN
+// ===============================
+function validarNumero(x, y) {
+  if (!cronometroActivo && indiceActual !== 0) return;
+
+  const p = puntos[indiceActual];
+  if (!p) return;
+
+  if (Math.hypot(x - p.x, y - p.y) < RADIO && puntoActivo !== indiceActual) {
+    puntoActivo = indiceActual;
+
+    if (indiceActual === 0) {
+      inicioTiempo = performance.now();
+      cronometroActivo = true;
+      actualizarTiempo();
+    }
+
+    indiceActual++;
+
+    if (indiceActual === puntos.length) {
+      cronometroActivo = false;
+      const tiempoFinal = parseFloat(timeLabel.textContent);
+
+      if (modoTest === "A") {
+        tiempoA = tiempoFinal;
+        capturarResultado("A");
+        modoTest = "B";
+        actualizarInstrucciones();
+        alert("Test A finalizado. Inicia el Test B");
+        resetCanvas();
+      } else {
+        tiempoB = tiempoFinal;
+        capturarResultado("B");
+        guardarResultadoFinal();
+        alert(`Prueba finalizada\nA: ${tiempoA}s\nB: ${tiempoB}s`);
+      }
+    }
   }
 }
 
-function cerrarInstrucciones() {
-  panelInstrucciones.style.display = "none";
-}
-
 // ===============================
-// TÁCTIL
+// GUARDAR DATOS
 // ===============================
-
-canvas.addEventListener("touchstart", e => {
-  e.preventDefault();
-  dibujando = true;
-  const p = getPos(e);
-  ultimoX = p.x;
-  ultimoY = p.y;
-  validarNumero(p.x, p.y);
-});
-
-canvas.addEventListener("touchmove", e => {
-  e.preventDefault();
-  if (!dibujando) return;
-
-  const p = getPos(e);
-  ctx.beginPath();
-  ctx.moveTo(ultimoX, ultimoY);
-  ctx.lineTo(p.x, p.y);
-  ctx.stroke();
-
-  ultimoX = p.x;
-  ultimoY = p.y;
-
-  validarNumero(p.x, p.y);
-});
-
-// ===============================
-// CAPTURAR RESULTADO - DESCARGA DE IMAGEN
-// ===============================
-
-function capturarResultado(tipoTest) {
-
-  const canvasTemp = document.createElement("canvas");
-  canvasTemp.width = canvas.width;
-  canvasTemp.height = canvas.height;
-
-  const ctxTemp = canvasTemp.getContext("2d");
-
-  ctxTemp.fillStyle = "#ffffff";
-  ctxTemp.fillRect(0, 0, canvasTemp.width, canvasTemp.height);
-  ctxTemp.drawImage(canvas, 0, 0);
-
-  const imagenBase64 = canvasTemp.toDataURL("image/png");
-
-  const payload = {
-    tipo: "imagen",
-    test: tipoTest,
-    nombre: participante.nombre,
-    apellido: participante.apellido,
-    edad: participante.edad,
-    fecha: obtenerFechaFormateada(),
-    imagen: imagenBase64
-  };
-
-  fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
+function guardarResultadoFinal() {
+  fetch(SCRIPT_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(payload)
-  })
-  .then(res => res.json())
-  .then(data => {
-    console.log(`Drive (${tipoTest}):`, data);
-  })
-  .catch(err => {
-    console.error("❌ Error Imagen:", err);
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      nombre: participante.nombre,
+      apellido: participante.apellido,
+      edad: participante.edad,
+      tiempoA,
+      tiempoB,
+      fecha: obtenerFechaFormateada()
+    })
   });
 }
 
 // ===============================
-// EVENTOS
+// CAPTURA IMAGEN
+// ===============================
+function capturarResultado(test) {
+  const temp = document.createElement("canvas");
+  temp.width = canvas.width;
+  temp.height = canvas.height;
+  const tctx = temp.getContext("2d");
+
+  tctx.fillStyle = "#fff";
+  tctx.fillRect(0,0,temp.width,temp.height);
+  tctx.drawImage(canvas,0,0);
+
+  fetch(SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      tipo: "imagen",
+      test,
+      nombre: participante.nombre,
+      apellido: participante.apellido,
+      edad: participante.edad,
+      fecha: obtenerFechaFormateada(),
+      imagen: temp.toDataURL("image/png")
+    })
+  });
+}
+
+// ===============================
+// INSTRUCCIONES
+// ===============================
+function actualizarInstrucciones() {
+  textoInstrucciones.innerHTML =
+    modoTest === "A"
+      ? "<b>Parte A</b><br>Conecte números en orden ascendente."
+      : "<b>Parte B</b><br>Alterne número y letra.";
+}
+
+// ===============================
+// EVENTOS CANVAS
 // ===============================
 canvas.addEventListener("mousedown", e => {
   dibujando = true;
   const p = getPos(e);
-  ultimoX = p.x;
-  ultimoY = p.y;
-  validarNumero(p.x, p.y);
+  ultimoX = p.x; ultimoY = p.y;
+  validarNumero(p.x,p.y);
 });
 
 canvas.addEventListener("mousemove", e => {
   if (!dibujando) return;
-
   const p = getPos(e);
   ctx.beginPath();
-  ctx.moveTo(ultimoX, ultimoY);
-  ctx.lineTo(p.x, p.y);
+  ctx.moveTo(ultimoX,ultimoY);
+  ctx.lineTo(p.x,p.y);
   ctx.stroke();
-
-  ultimoX = p.x;
-  ultimoY = p.y;
-
-  validarNumero(p.x, p.y);
+  ultimoX=p.x; ultimoY=p.y;
+  validarNumero(p.x,p.y);
 });
 
-canvas.addEventListener("mouseup", () => dibujando = false);
-canvas.addEventListener("mouseleave", () => dibujando = false);
+canvas.addEventListener("mouseup", ()=>dibujando=false);
+canvas.addEventListener("mouseleave", ()=>dibujando=false);
 
-btnAceptar.addEventListener("click", () => {
-  modal.style.display = "none";
-
-  document.getElementById("registro").style.display = "none";
-  document.getElementById("test").style.display = "block";
-
-  modoTest = "A";
-  document.getElementById("tituloTest").textContent = "Trail Making Test A";
-
-  actualizarInstrucciones();
-  resetCanvas();
+canvas.addEventListener("touchstart", e=>{
+  e.preventDefault();
+  dibujando=true;
+  const p=getPos(e);
+  ultimoX=p.x; ultimoY=p.y;
+  validarNumero(p.x,p.y);
 });
 
-
-
-textoPolitica.addEventListener("scroll", () => {
-  const alFinal =
-    textoPolitica.scrollTop + textoPolitica.clientHeight >=
-    textoPolitica.scrollHeight - 5;
-
-  if (alFinal) {
-    btnAceptar.disabled = false;
-  }
+canvas.addEventListener("touchmove", e=>{
+  e.preventDefault();
+  if(!dibujando) return;
+  const p=getPos(e);
+  ctx.beginPath();
+  ctx.moveTo(ultimoX,ultimoY);
+  ctx.lineTo(p.x,p.y);
+  ctx.stroke();
+  ultimoX=p.x; ultimoY=p.y;
+  validarNumero(p.x,p.y);
 });
 
-function cancelarRegistro() {
-  modal.style.display = "none";
-}
-
-btnInfo.addEventListener("click", () => {
-  panelInstrucciones.style.display = "block";
-});
-
-canvas.addEventListener("touchend", () => dibujando = false);
+canvas.addEventListener("touchend", ()=>dibujando=false);
 
 // ===============================
 // INICIO
 // ===============================
-resetCanvas(); 
+resetCanvas();
