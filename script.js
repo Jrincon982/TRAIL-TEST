@@ -179,7 +179,7 @@ function guardarResultadoFinal() {
     fecha: obtenerFechaFormateada()
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
     method: "POST",
     mode: "no-cors",
     headers: {
@@ -246,6 +246,7 @@ function validarNumero(x, y) {
     tiempoB = tiempoFinal;
 
     capturarResultado("B");
+    guardarResultadoFinal();
     alert(
       "Trail Test completado\n" +
       `Tiempo A: ${tiempoA} s\n` +
@@ -269,13 +270,13 @@ function getPos(e) {
 
   if (e.touches) {
     return {
-      x: e.touches[0].clientX - rect.left,
-      y: e.touches[0].clientY - rect.top
+      x: (e.touches[0].clientX - rect.left) * scaleX,
+      y: (e.touches[0].clientY - rect.top) * scaleY
     };
   } else {
     return {
-      x: e.offsetX,
-      y: e.offsetY
+      x: e.offsetX * scaleX,
+      y: e.offsetY * scaleY
     };
   }
 }
@@ -364,7 +365,7 @@ function capturarResultado(tipoTest) {
         imagen: imagenBase64
     };
 
-    fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
