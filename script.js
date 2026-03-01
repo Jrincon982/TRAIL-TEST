@@ -266,6 +266,8 @@ function validarNumero(x, y) {
 // ===============================
 function getPos(e) {
   const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
 
   if (e.touches) {
     return {
@@ -304,7 +306,10 @@ function cerrarInstrucciones() {
   panelInstrucciones.style.display = "none";
 }
 
-// === TÁCTIL ===
+// ===============================
+// TÁCTIL
+// ===============================
+
 canvas.addEventListener("touchstart", e => {
   e.preventDefault();
   dibujando = true;
@@ -346,49 +351,36 @@ function capturarResultado(tipoTest) {
     ctxTemp.fillStyle = "#ffffff";
     ctxTemp.fillRect(0, 0, canvasTemp.width, canvasTemp.height);
 
-    // Copiar el dibujo original
+    // Copiar dibujo original
     ctxTemp.drawImage(canvas, 0, 0);
 
     const imagenBase64 = canvasTemp.toDataURL("image/png");
 
-    const enlace = document.createElement("a");
-    enlace.href = imagenBase64;
+    const payload = {
+        tipo: "imagen",
+        test: tipoTest, // "A" o "B"
+        nombre: participante.nombre,
+        apellido: participante.apellido,
+        edad: participante.edad,
+        fecha: obtenerFechaFormateada(),
+        imagen: imagenBase64
+    };
 
-    const fecha = obtenerFechaFormateada();
-
-    const nombreArchivo =
-        participante.nombre + "_" +
-        participante.apellido +
-        "_Test" + tipoTest + "_" +
-        fecha + ".png";
-
-    enlace.download = nombreArchivo;
-
-    document.body.appendChild(enlace);
-    enlace.click();
-    document.body.removeChild(enlace);
+    fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
+        method: "POST",
+        mode: "no-cors",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+    })
+    .then(() => {
+        console.log(`Imagen Test ${tipoTest} enviada a Drive`);
+    })
+    .catch(err => {
+        console.error("Error enviando imagen:", err);
+    });
 }
-
-function descargarImagen(dataURL, tipoTest) {
-    const enlace = document.createElement("a");
-    enlace.href = dataURL;
-
-    const fecha = obtenerFechaFormateada();
-
-    const nombreArchivo =
-        participante.nombre + "_" +
-        participante.apellido +
-        "_Test" + tipoTest + "_" +
-        fecha + ".png";
-
-    enlace.download = nombreArchivo;
-
-    document.body.appendChild(enlace);
-    enlace.click();
-    document.body.removeChild(enlace);
-}
-
-
 
 // ===============================
 // EVENTOS
