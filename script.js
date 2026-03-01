@@ -181,18 +181,19 @@ function guardarResultadoFinal() {
 
   fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
     method: "POST",
-    mode: "no-cors",
     headers: {
       "Content-Type": "application/json"
     },
     body: JSON.stringify(resultado)
   })
-  .then(() => {
-    alert("Resultados guardados correctamente en Google Sheets");
+  .then(res => res.json())
+  .then(data => {
+    console.log("Sheets:", data);
+    alert("✅ Resultados guardados en Google Sheets");
   })
   .catch(err => {
-    console.error("Error al guardar:", err);
-    alert("Error al guardar datos");
+    console.error("❌ Error Sheets:", err);
+    alert("❌ Error al guardar datos");
   });
 }
 
@@ -340,45 +341,42 @@ canvas.addEventListener("touchmove", e => {
 
 function capturarResultado(tipoTest) {
 
-    const canvasTemp = document.createElement("canvas");
-    canvasTemp.width = canvas.width;
-    canvasTemp.height = canvas.height;
+  const canvasTemp = document.createElement("canvas");
+  canvasTemp.width = canvas.width;
+  canvasTemp.height = canvas.height;
 
-    const ctxTemp = canvasTemp.getContext("2d");
+  const ctxTemp = canvasTemp.getContext("2d");
 
-    // Fondo blanco
-    ctxTemp.fillStyle = "#ffffff";
-    ctxTemp.fillRect(0, 0, canvasTemp.width, canvasTemp.height);
+  ctxTemp.fillStyle = "#ffffff";
+  ctxTemp.fillRect(0, 0, canvasTemp.width, canvasTemp.height);
+  ctxTemp.drawImage(canvas, 0, 0);
 
-    // Copiar dibujo original
-    ctxTemp.drawImage(canvas, 0, 0);
+  const imagenBase64 = canvasTemp.toDataURL("image/png");
 
-    const imagenBase64 = canvasTemp.toDataURL("image/png");
+  const payload = {
+    tipo: "imagen",
+    test: tipoTest,
+    nombre: participante.nombre,
+    apellido: participante.apellido,
+    edad: participante.edad,
+    fecha: obtenerFechaFormateada(),
+    imagen: imagenBase64
+  };
 
-    const payload = {
-        tipo: "imagen",
-        test: tipoTest, // "A" o "B"
-        nombre: participante.nombre,
-        apellido: participante.apellido,
-        edad: participante.edad,
-        fecha: obtenerFechaFormateada(),
-        imagen: imagenBase64
-    };
-
-    fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(() => {
-        console.log(`Imagen Test ${tipoTest} enviada a Drive`);
-    })
-    .catch(err => {
-        console.error("Error enviando imagen:", err);
-    });
+  fetch("https://script.google.com/macros/s/AKfycbweQe4_1UBh4I3XeUnh_w3KZqAhXwGRcAjQQ-DL7ymwMLiC-ecEYKXCeEQpzEDwbQ3RAA/exec", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log(`Drive (${tipoTest}):`, data);
+  })
+  .catch(err => {
+    console.error("❌ Error Imagen:", err);
+  });
 }
 
 // ===============================
