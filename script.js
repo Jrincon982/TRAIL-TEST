@@ -178,7 +178,7 @@ function guardarResultadoFinal() {
     fecha: obtenerFechaFormateada()
   };
 
-  fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbz5vFT6u7w-6TNJtwzITqfhPo3EuUofYYBFFhmESEvX3h5PxWimyuFYgK8wE4T_9mgdAQ/exec", {
     method: "POST",
     mode: "no-cors",
     headers: {
@@ -257,7 +257,6 @@ function validarNumero(x, y) {
 
   }
 }
-
 
 // ===============================
 // OBTENER POSICIÓN
@@ -353,6 +352,7 @@ function capturarResultado(tipoTest) {
     ctxTemp.drawImage(canvas, 0, 0);
 
     const imagenBase64 = canvasTemp.toDataURL("image/png");
+    console.log("Tamaño base64:", imagenBase64.length);
 
     const payload = {
         tipo: "imagen",
@@ -364,7 +364,7 @@ function capturarResultado(tipoTest) {
         imagen: imagenBase64
     };
 
-    fetch("https://script.google.com/macros/s/AKfycbySAk8uROw8S6j0j82-YJxNuURFOnZzKUndsMRzb1AaQKH7eG05_VlVFgpcN69b0TINaA/exec", {
+    fetch("https://script.google.com/macros/s/AKfycbyj0DVPaX3t4sHcuza8-Zs-OoYhfLwqHSDImal866cGxiJrrqQ8sHB0i-Q3JTHVwV45Fw/exec", {
         method: "POST",
         mode: "no-cors",
         headers: {
