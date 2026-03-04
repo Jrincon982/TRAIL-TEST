@@ -228,7 +228,6 @@ function validarNumero(x, y) {
   if (modoTest === "A") {
     // Guardar tiempo A
     tiempoA = tiempoFinal;
-    capturarResultado("A");
 
     // Preparar Test B
     modoTest = "B";
@@ -243,8 +242,7 @@ function validarNumero(x, y) {
   if (modoTest === "B") {
     // Guardar tiempo B
     tiempoB = tiempoFinal;
-
-    capturarResultado("B");
+    
     guardarResultadoFinal();
     alert(
       "Trail Test completado\n" +
@@ -331,54 +329,6 @@ canvas.addEventListener("touchmove", e => {
 
   validarNumero(p.x, p.y);
 });
-
-// ===============================
-// CAPTURAR RESULTADO - DESCARGA DE IMAGEN
-// ===============================
-
-function capturarResultado(tipoTest) {
-
-    const canvasTemp = document.createElement("canvas");
-    canvasTemp.width = canvas.width;
-    canvasTemp.height = canvas.height;
-
-    const ctxTemp = canvasTemp.getContext("2d");
-
-    // Fondo blanco
-    ctxTemp.fillStyle = "#ffffff";
-    ctxTemp.fillRect(0, 0, canvasTemp.width, canvasTemp.height);
-
-    // Copiar dibujo original
-    ctxTemp.drawImage(canvas, 0, 0);
-
-    const imagenBase64 = canvasTemp.toDataURL("image/png");
-    console.log("Tamaño base64:", imagenBase64.length);
-
-    const payload = {
-        tipo: "imagen",
-        test: tipoTest, // "A" o "B"
-        nombre: participante.nombre,
-        apellido: participante.apellido,
-        edad: participante.edad,
-        fecha: obtenerFechaFormateada(),
-        imagen: imagenBase64
-    };
-
-    fetch("https://script.google.com/macros/s/AKfycbyj0DVPaX3t4sHcuza8-Zs-OoYhfLwqHSDImal866cGxiJrrqQ8sHB0i-Q3JTHVwV45Fw/exec", {
-        method: "POST",
-        mode: "no-cors",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-    })
-    .then(() => {
-        console.log(`Imagen Test ${tipoTest} enviada a Drive`);
-    })
-    .catch(err => {
-        console.error("Error enviando imagen:", err);
-    });
-}
 
 // ===============================
 // EVENTOS
