@@ -286,13 +286,13 @@ function actualizarInstrucciones() {
     textoInstrucciones.innerHTML = 
     `<strong>Parte A</strong><br><br>
     Conecte los números en orden ascendente:<br>
-    1 → 2 → 3 → 4 ...<br><br>
+    1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 <br><br>
     lo más rápido posible sin detener el trazo (NO LEVANTAR EL DEDO DE LA PANTALLA).`;
   } else {
     textoInstrucciones.innerHTML = 
     `<strong>Parte B</strong><br><br>
     Conecte alternando número y letra:<br>
-    1 → A → 2 → B → 3 → C ...<br><br>
+    1 → A → 2 → B → 3 → C → 4 → D <br><br>
     Mantenga el orden correcto y trabaje lo más rápido posible (NO LEVANTAR EL DEDO DE LA PANTALLA).`;
   }
 }
